@@ -1,0 +1,33 @@
+name: pipeline
+
+on: [push]
+
+jobs:
+  pipeline:
+    env:
+      CI: true
+    name: pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Install packages
+        run: |
+          npm install -g purescript spago purty
+          spago install
+
+      - name: Lint
+        run: purty validate src/ && purty validate test/
+
+      - name: Build
+        run: spago build
+
+      - name: Test
+        run: spago test
